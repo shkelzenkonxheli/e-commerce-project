@@ -3,8 +3,12 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useContext } from "react";
 import { ProductContext } from "./ProductContext";
+import { signOut, useSession } from "next-auth/react";
 
 const Navbar = () => {
+  const session = useSession();
+  console.log(session);
+  const status = session.status;
   const pathname = usePathname();
   const { selectedProduct } = useContext(ProductContext);
 
@@ -50,31 +54,30 @@ const Navbar = () => {
       </nav>
 
       <nav className="flex items-center gap-4 text-gray-500 font-semibold">
-        <Link href={"/login"} className="hover:underline">
-          Login
-        </Link>
-        <Link
-          href={"/register"}
-          className="bg-emerald-400 rounded-full text-white px-6 py-2 hover:bg-primary/80"
-        >
-          Register
-        </Link>
+        {status === "authenticated" && (
+          <button
+            onClick={() => signOut({ redirect: false })}
+            className="bg-emerald-400 rounded-full text-white px-6 py-2 hover:bg-primary/80"
+          >
+            Logout
+          </button>
+        )}
+        {status == "unauthenticated" && (
+          <>
+            <Link href={"/login"} className="hover:underline">
+              Login
+            </Link>
+            <Link
+              href={"/register"}
+              className="bg-emerald-400 rounded-full text-white px-6 py-2 hover:bg-primary/80"
+            >
+              Register
+            </Link>
+          </>
+        )}
       </nav>
     </header>
   );
 };
 
 export default Navbar;
-{
-  /* Shop Now button only if not on /shop */
-}
-{
-  /*pathname !== "/shop" && (
-            <Link
-              href="/shop"
-              className="bg-emerald-700 cursor-pointer text-white px-6 py-2 rounded-xl font-bold"
-            >
-              Shop Now
-            </Link>
-          )*/
-}
