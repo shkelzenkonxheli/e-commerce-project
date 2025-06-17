@@ -9,6 +9,12 @@ const Navbar = () => {
   const session = useSession();
   console.log(session);
   const status = session.status;
+  const user = session.data?.user;
+  let userName = user?.name || useSession?.email;
+
+  if (userName && userName.includes(" ")) {
+    userName = userName.split(" ")[0];
+  }
   const pathname = usePathname();
   const { selectedProduct } = useContext(ProductContext);
 
@@ -55,12 +61,17 @@ const Navbar = () => {
 
       <nav className="flex items-center gap-4 text-gray-500 font-semibold">
         {status === "authenticated" && (
-          <button
-            onClick={() => signOut({ redirect: false })}
-            className="bg-emerald-400 rounded-full text-white px-6 py-2 hover:bg-primary/80"
-          >
-            Logout
-          </button>
+          <>
+            <Link href="/profile" className="hover:underline">
+              Hello, {userName}
+            </Link>
+            <button
+              onClick={() => signOut({ redirect: false })}
+              className="bg-emerald-400 rounded-full text-white px-6 py-2 hover:bg-primary/80"
+            >
+              Logout
+            </button>
+          </>
         )}
         {status == "unauthenticated" && (
           <>
