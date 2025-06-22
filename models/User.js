@@ -10,7 +10,7 @@ const UserSchema = new Schema(
       required: true,
       validate: (pass) => {
         if (!pass?.length || pass.length < 5) {
-          new Error("Pasword  must be least 5 characters");
+          new Error("Password must be at least 5 characters");
           return false;
         }
       },
@@ -30,4 +30,4 @@ UserSchema.post("validate", function (user) {
   user.password = bcrypt.hashSync(notHashedPassword, salt);
 });
 
-export const User = mongoose.models.User || mongoose.model("User", UserSchema);
+export const User = models.User || model("User", UserSchema);
