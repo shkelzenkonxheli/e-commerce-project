@@ -30,4 +30,4 @@ UserSchema.post("validate", function (user) {
   user.password = bcrypt.hashSync(notHashedPassword, salt);
 });
 
-export const User = models?.User || model("User", UserSchema);
+export const User = mongoose.models.User || mongoose.model("User", UserSchema);
