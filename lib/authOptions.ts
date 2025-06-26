@@ -25,7 +25,7 @@ export const authOptions: NextAuthOptions = {
         const email = credentials?.email;
         const password = credentials?.password;
         await mongoose.connect(process.env.MONGODB_URL!);
-        const user = await User.findOne({ email }).exec(); // 🔧 përdor exec() për qartësi me TS
+        const user = await User.findOne({ email })
         if (user && bcrypt.compareSync(password!, user.password)) {
           return user;
         }

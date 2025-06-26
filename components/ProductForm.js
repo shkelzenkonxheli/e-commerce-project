@@ -17,8 +17,6 @@ export default function ProductForm({ onProductAdded }) {
     if (res.ok) {
       const savedProduct = await res.json();
       onProductAdded(savedProduct);
-
-      // pastron fushat
       setName("");
       setDescription("");
       setPrice("");
