@@ -1,29 +1,18 @@
-import mongoose, { Schema, Document, model, models } from "mongoose";
+import { Schema, model, models } from "mongoose";
 import bcrypt from "bcrypt";
 
-export interface IUser extends Document {
-  name?: string;
-  email: string;
-  password: string;
-  phone?: string;
-  address?: string;
-  postalCode?: string;
-  city?: string;
-  country?: string;
-}
-
-const UserSchema = new Schema<IUser>(
+const UserSchema = new Schema(
   {
     name: { type: String },
     email: { type: String, required: true, unique: true },
     password: {
       type: String,
       required: true,
-      validate: (pass: string) => {
+      validate: (pass) => {
         if (!pass?.length || pass.length < 5) {
-          throw new Error("Password must be at least 5 characters");
+          new Error("Password must be at least 5 characters");
+          return false;
         }
-        return true;
       },
     },
     phone: { type: String },
@@ -31,14 +20,15 @@ const UserSchema = new Schema<IUser>(
     postalCode: { type: String },
     city: { type: String },
     country: { type: String },
+    admin: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
 
-UserSchema.post("validate", function (user: IUser) {
+UserSchema.post("validate", function (user) {
   const notHashedPassword = user.password;
   const salt = bcrypt.genSaltSync(10);
   user.password = bcrypt.hashSync(notHashedPassword, salt);
 });
 
-export const User = models.User || model<IUser>("User", UserSchema);
+export const User = models.User || model("User", UserSchema);

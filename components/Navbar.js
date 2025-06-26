@@ -66,7 +66,7 @@ const Navbar = () => {
               Hello, {userName}
             </Link>
             <button
-              onClick={() => signOut({ redirect: false })}
+              onClick={() => signOut({ callbackUrl: "/" })}
               className="bg-emerald-400 rounded-full text-white px-6 py-2 hover:bg-primary/80"
             >
               Logout

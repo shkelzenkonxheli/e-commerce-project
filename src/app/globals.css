@@ -36,3 +36,10 @@ body {
 .label-style {
   @apply  text-gray-500 text-sm font-medium leading-tight;
 }
+.tabs > * {
+  @apply bg-gray-300 text-white rounded-full py-2 px-4 font-bold;
+}
+
+.tabs > *.active {
+  @apply bg-emerald-500;
+}

@@ -1,9 +1,11 @@
 "use client";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { resolve } from "path";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
+import UserTabs from "../../../components/UserTabs";
 
 export default function ProfilePage() {
   const { data: session, status } = useSession();
@@ -13,23 +15,27 @@ export default function ProfilePage() {
   const [postalCode, setPostalCode] = useState("");
   const [city, setCity] = useState("");
   const [country, setCountry] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [profileFetched, setProfileFetched] = useState(false);
 
   useEffect(() => {
-    if (status === "authenticated") {
-      setUsername(session.user.name);
+    if (status === "authenticated" && session?.user) {
+      setUsername(session.user.name || ""); // fallback në ""
       fetch("/api/profile").then((response) => {
         response.json().then((data) => {
-          setPhone(data.phone);
-          setAddress(data.address);
-          setPostalCode(data.postalCode);
-          setCity(data.city);
-          setCountry(data.country);
+          setPhone(data?.phone || "");
+          setAddress(data?.address || "");
+          setPostalCode(data?.postalCode || "");
+          setCity(data?.city || "");
+          setCountry(data?.country || "");
+          setIsAdmin(data?.admin || false);
+          setProfileFetched(true);
         });
       });
     }
   }, [session, status]);
 
-  if (status === "loading")
+  if (status === "loading" || !profileFetched)
     return <p className="text-center mt-8">Loading...</p>;
   if (status === "unauthenticated") {
     redirect("/login");
@@ -68,16 +74,13 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="mt-16 px-4">
+    <div className="max-w-4xl mx-auto mt-10">
+      <UserTabs isAdmin={isAdmin} />
+
       <form
         onSubmit={handleSubmit}
-        className="max-w-md mx-auto bg-white shadow-lg rounded-2xl p-8 space-y-4 border border-gray-100"
+        className=" mt-8 max-w-md mx-auto bg-white shadow-lg rounded-2xl p-8 space-y-4 border border-gray-100"
       >
-        <h1 className="text-2xl font-bold text-center text-gray-800">
-          Your Profile
-        </h1>
-
-        {/* Username */}
         <div className="space-y-1">
           <label className="label-style">Username</label>
           <input
@@ -89,13 +92,11 @@ export default function ProfilePage() {
           />
         </div>
 
-        {/* Email (read-only) */}
         <div className="space-y-1">
           <label className="label-style">Email</label>
           <div className="readonly-style">{user?.email}</div>
         </div>
 
-        {/* Phone */}
         <div className="space-y-1">
           <label className="label-style">Phone number</label>
           <input
@@ -107,7 +108,6 @@ export default function ProfilePage() {
           />
         </div>
 
-        {/* Address */}
         <div className="space-y-1">
           <label className="label-style">Address</label>
           <input
@@ -119,7 +119,6 @@ export default function ProfilePage() {
           />
         </div>
 
-        {/* City & Postal Code */}
         <div className="flex gap-4">
           <div className="w-1/2 space-y-1">
             <label className="label-style">City</label>
@@ -143,7 +142,6 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Country */}
         <div className="space-y-1">
           <label className="label-style">Country</label>
           <input
@@ -155,7 +153,6 @@ export default function ProfilePage() {
           />
         </div>
 
-        {/* Submit */}
         <button type="submit" className="btn-primary">
           Save Changes
         </button>

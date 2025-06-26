@@ -25,3 +25,10 @@ export async function GET(req) {
     );
   }
 }
+
+export async function POST(req) {
+  await initMongoose();
+  const body = await req.json();
+  const newProduct = await Product.create(body);
+  return NextResponse.json(newProduct);
+}
