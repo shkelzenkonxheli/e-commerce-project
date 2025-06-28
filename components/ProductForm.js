@@ -1,5 +1,5 @@
-import { useState } from "react";
-export default function ProductForm({ onProductAdded }) {
+import { useEffect, useState } from "react";
+export default function ProductForm({ product, onSave }) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
@@ -9,14 +9,21 @@ export default function ProductForm({ onProductAdded }) {
   async function handleSubmit(ev) {
     ev.preventDefault();
     const res = await fetch("/api/products", {
-      method: "POST",
-      body: JSON.stringify({ name, description, price, category, picture }),
+      method: product ? "PUT" : "POST",
+      body: JSON.stringify({
+        id: product?._id,
+        name,
+        description,
+        price,
+        category,
+        picture,
+      }),
       headers: { "Content-type": "application/json" },
     });
 
     if (res.ok) {
       const savedProduct = await res.json();
-      onProductAdded(savedProduct);
+      onSave(savedProduct);
       setName("");
       setDescription("");
       setPrice("");
@@ -24,6 +31,15 @@ export default function ProductForm({ onProductAdded }) {
       setPicture("");
     }
   }
+  useEffect(() => {
+    if (product) {
+      setName(product.name || "");
+      setDescription(product.description || "");
+      setPrice(product.price || "");
+      setCategory(product.category || "");
+      setPicture(product.picture || "");
+    }
+  }, [product]);
 
   return (
     <form
@@ -31,7 +47,7 @@ export default function ProductForm({ onProductAdded }) {
       className="mt-8 max-w-md mx-auto bg-white shadow-lg rounded-2xl p-8 space-y-4 border border-gray-100"
     >
       <h2 className=" flex justify-center text-2xl font-bold text-gray-800">
-        Add Product
+        {product ? "Edit Product" : "Add Product"}
       </h2>
       <input
         value={name}
