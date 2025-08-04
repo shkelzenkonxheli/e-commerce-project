@@ -2,14 +2,30 @@
 import { useContext, useEffect, useState } from "react";
 import Layout from "../../../components/Layout";
 import { ProductContext } from "../../../components/ProductContext";
+import { useSession } from "next-auth/react";
 
 export default function CheckoutPage() {
+  const { data: session, status } = useSession();
+
   const { selectedProduct, setSelectedProduct } = useContext(ProductContext);
   const [productsInfo, setProductsInfo] = useState([]);
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+
+  useEffect(() => {
+    if (status === "authenticated" && session?.user) {
+      fetch("/api/profile")
+        .then((response) => response.json())
+        .then((data) => {
+          setName(data?.name || "");
+          setEmail(data?.email || "");
+          setAddress(data?.address || "");
+          setCity(data?.city || "");
+        });
+    }
+  }, [session, status]);
 
   useEffect(() => {
     const savedProducts =
@@ -39,9 +55,17 @@ export default function CheckoutPage() {
 
   function lessOfThisProduct(_id) {
     setSelectedProduct((prev) => {
-      const updatedProducts = prev.filter((id) => id !== _id);
-      localStorage.setItem("selectedProducts", JSON.stringify(updatedProducts));
-      return updatedProducts;
+      const index = prev.findIndex((id) => id === _id);
+      if (index !== -1) {
+        const updatedProducts = [...prev];
+        updatedProducts.splice(index, 1);
+        localStorage.setItem(
+          "selectedProducts",
+          JSON.stringify(updatedProducts)
+        );
+        return updatedProducts;
+      }
+      return prev;
     });
   }
 
@@ -60,7 +84,7 @@ export default function CheckoutPage() {
 
   function handleCheckout() {
     if (!name || !email || !address || !city) {
-      alert("Ju lutem plotesoni te gjitha te dhenat e kerkura.");
+      alert("Please fill in all fields before proceeding to checkout.");
       return;
     }
 
@@ -152,35 +176,58 @@ export default function CheckoutPage() {
 
           {selectedProduct.length > 0 && (
             <>
-              <div className="mt-6">
-                <input
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  className="w-full p-3 text-base border border-gray-300 rounded-md mb-3 focus:outline-none"
-                  type="text"
-                  placeholder="Street Address"
-                />
-                <input
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  className="w-full p-3 text-base border border-gray-300 rounded-md mb-3 focus:outline-none"
-                  type="text"
-                  placeholder="City and Postal Code"
-                />
-                <input
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full p-3 text-base border border-gray-300 rounded-md mb-3 focus:outline-none"
-                  type="text"
-                  placeholder="Your Name"
-                />
-                <input
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full p-3 text-base border border-gray-300 rounded-md mb-3 focus:outline-none"
-                  type="email"
-                  placeholder="Email Address"
-                />
+              <div className="mt-6 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Address
+                  </label>
+                  <input
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    className="w-full p-3 text-base border border-gray-300 rounded-md focus:outline-none"
+                    type="text"
+                    placeholder="Street Address"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    City and Postal Code
+                  </label>
+                  <input
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    className="w-full p-3 text-base border border-gray-300 rounded-md focus:outline-none"
+                    type="text"
+                    placeholder="City and Postal Code"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Full Name
+                  </label>
+                  <input
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full p-3 text-base border border-gray-300 rounded-md focus:outline-none"
+                    type="text"
+                    placeholder="Your Name"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Email Address
+                  </label>
+                  <input
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full p-3 text-base border border-gray-300 rounded-md focus:outline-none"
+                    type="email"
+                    placeholder="Email Address"
+                  />
+                </div>
               </div>
 
               <div className="mt-6">
@@ -201,7 +248,7 @@ export default function CheckoutPage() {
 
                 <button
                   onClick={handleCheckout}
-                  className="bg-green-500 text-white px-6 py-3 rounded-xl w-full font-semibold"
+                  className="bg-green-500 text-white px-6 py-3 rounded-xl w-full font-semibold cursor-pointer hover:bg-green-600 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Pay ${total}
                 </button>
