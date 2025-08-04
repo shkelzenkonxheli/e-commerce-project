@@ -96,21 +96,21 @@ export default function CheckoutPage() {
 
   return (
     <Layout>
-      <div className="flex justify-center items-center min-h-screen bg-gray-50">
-        <div className="w-full max-w-3xl p-6 bg-white rounded-lg shadow-lg">
+      <div className="flex justify-center items-center py-10 sm:min-h-screen bg-gray-50">
+        <div className="w-full max-w-xl mx-auto p-4 sm:p-6 bg-white rounded-lg shadow">
           {productsInfo.length > 0 ? (
             <ul className="space-y-4">
               {productsInfo.map((product) => (
-                <div
+                <li
                   key={product._id}
-                  className="flex bg-white p-4 rounded-lg shadow-lg"
+                  className="flex flex-col sm:flex-row bg-white p-4 rounded-lg shadow"
                 >
                   <img
-                    className="w-24 h-24 object-cover rounded-lg"
+                    className="w-full sm:w-24 h-48 object-contain rounded-lg"
                     src={product.picture}
                     alt={product.name}
                   />
-                  <div className="ml-4 flex flex-col justify-between">
+                  <div className="sm:ml-4 mt-3 sm:mt-0 flex flex-col justify-between">
                     <h3 className="font-semibold text-lg text-gray-800">
                       {product.name}
                     </h3>
@@ -126,7 +126,7 @@ export default function CheckoutPage() {
                         >
                           -
                         </button>
-                        <span className="mx-2">
+                        <span className="mx-2 text-sm">
                           {
                             selectedProduct.filter((id) => id === product._id)
                               .length
@@ -141,7 +141,7 @@ export default function CheckoutPage() {
                       </div>
                     </div>
                   </div>
-                </div>
+                </li>
               ))}
             </ul>
           ) : (
@@ -149,34 +149,35 @@ export default function CheckoutPage() {
               Empty cart. Please add some products.
             </p>
           )}
+
           {selectedProduct.length > 0 && (
             <>
               <div className="mt-6">
                 <input
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
-                  className="w-full p-3 border border-gray-300 rounded-md mb-3"
+                  className="w-full p-3 text-base border border-gray-300 rounded-md mb-3 focus:outline-none"
                   type="text"
                   placeholder="Street Address"
                 />
                 <input
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
-                  className="w-full p-3 border border-gray-300 rounded-md mb-3"
+                  className="w-full p-3 text-base border border-gray-300 rounded-md mb-3 focus:outline-none"
                   type="text"
                   placeholder="City and Postal Code"
                 />
                 <input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full p-3 border border-gray-300 rounded-md mb-3"
+                  className="w-full p-3 text-base border border-gray-300 rounded-md mb-3 focus:outline-none"
                   type="text"
                   placeholder="Your Name"
                 />
                 <input
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full p-3 border border-gray-300 rounded-md mb-3"
+                  className="w-full p-3 text-base border border-gray-300 rounded-md mb-3 focus:outline-none"
                   type="email"
                   placeholder="Email Address"
                 />

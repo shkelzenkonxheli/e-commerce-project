@@ -9,7 +9,6 @@ export default function OrdersPage() {
   const [profileFetched, setProfileFetched] = useState(false);
   const [orders, setOrders] = useState([]);
 
-  // Marrim të dhënat e profilit
   useEffect(() => {
     if (status === "authenticated" && session?.user) {
       fetch("/api/profile")
@@ -21,7 +20,6 @@ export default function OrdersPage() {
     }
   }, [session, status]);
 
-  // Marrim porositë vetëm kur profili është marrë
   useEffect(() => {
     if (status === "authenticated" && profileFetched) {
       fetch("/api/orders")
@@ -31,35 +29,89 @@ export default function OrdersPage() {
     }
   }, [session, status, profileFetched]);
 
-  // Shfaq ngarkimin vetëm pasi të jenë marrë të dhënat
+  async function handleDelete(orderId) {
+    if (confirm("Are you sure you want to delete this order?")) {
+      const res = await fetch("/api/orders", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: orderId }),
+      });
+      if (res.ok) {
+        setOrders((prevOrders) =>
+          prevOrders.filter((order) => order._id !== orderId)
+        );
+      } else {
+        console.error("Failed to delete order");
+      }
+    }
+  }
+
   if (status === "loading" || !profileFetched) {
     return <p className="text-center mt-8">Loading...</p>;
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-4">
+    <div className="max-w-4xl mx-auto p-4">
       <UserTabs isAdmin={isAdmin} />
-      <h1 className="text-2xl font-bold mb-4">Orders</h1>
-      <div className="bg-white shadow-md rounded-lg p-6">
-        {orders.length === 0 ? (
-          <p>No orders found.</p>
-        ) : (
-          <ul className="mt-8 flex flex-jusitfy-between flex-col gap-4">
-            {orders.map((order) => (
-              <li
-                key={order._id}
-                className="border-b border-gray-200 py-4 flex justify-between"
-              >
-                {order.address},{order.name},
-                <span className="text-sm text-gray-500">
-                  {new Date(order.createdAt).toLocaleDateString()}
-                </span>
-                {order.city},
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+      <h1 className="mt-8 text-2xl font-bold mb-4 text-center">Orders</h1>
+
+      {orders.length === 0 ? (
+        <p className="text-center text-gray-500">No orders found.</p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white  border-gray-300 shadow-sm rounded-lg">
+            <thead>
+              <tr className="bg-gray-100 text-left text-sm font-semibold text-gray-700">
+                <th className="px-4 py-3 ">Name</th>
+                <th className="px-4 py-3 ">Address</th>
+                <th className="px-4 py-3 ">Total</th>
+                <th className="px-4 py-3 ">Date</th>
+                <th className="px-4 py-3 ">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orders.map((order) => (
+                <tr
+                  key={order._id}
+                  className="text-sm text-gray-600 hover:bg-gray-50 "
+                >
+                  <td className="px-4 py-3">{order.name}</td>
+                  <td className="px-4 py-3">
+                    {order.address}, {order.city}
+                  </td>
+                  <td className="px-4 py-3">
+                    ${order.total?.toFixed(2) ?? "N/A"}
+                  </td>
+
+                  <td className="px-4 py-3">
+                    {new Date(order.createdAt).toLocaleDateString()}
+                  </td>
+                  <td className="px-4 py-3">
+                    <span
+                      className={
+                        order.paid
+                          ? "text-green-600 font-medium"
+                          : "text-red-600 font-medium"
+                      }
+                    >
+                      {order.paid ? "Paid" : "Not Paid"}
+                    </span>
+                  </td>
+                  <td onClick={() => handleDelete(order._id)}>
+                    <img
+                      src={"/delete.png"}
+                      alt={"delete"}
+                      className="w-4 h-4 cursor-pointer"
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }

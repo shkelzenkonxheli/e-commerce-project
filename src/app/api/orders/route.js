@@ -14,3 +14,20 @@ export async function GET(req) {
     );
   }
 }
+export async function DELETE(req) {
+  await initMongoose();
+  const { id } = await req.json();
+  try {
+    await Order.findByIdAndDelete(id).exec();
+    return NextResponse.json(
+      { message: "Order deleted successfully" },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Error in /api/orders/[id]:", error);
+    return NextResponse.json(
+      { message: "Internal Server Error", error: error.message },
+      { status: 500 }
+    );
+  }
+}
