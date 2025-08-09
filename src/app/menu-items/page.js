@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import UserTabs from "../../../components/UserTabs";
 import ProductForm from "../../../components/ProductForm";
-
+import { toast } from "react-hot-toast";
 export default function MenuItemsPage() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [checkedAdmin, setCheckedAdmin] = useState(false);
@@ -23,6 +23,7 @@ export default function MenuItemsPage() {
   function handleNewProduct(newProduct) {
     setItems((prevItems) => [...prevItems, newProduct]);
     setShowForm(false);
+    toast.success("Product added successfully!");
   }
   function handleEditProduct(item) {
     setEditProduct(item);

@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { ProductContext } from "./ProductContext";
 import { useEffect } from "react";
+import { toast } from "react-hot-toast";
 
 export default function Product({ _id, name, description, price, picture }) {
   const { selectedProduct, setSelectedProduct } = useContext(ProductContext);
@@ -17,6 +18,7 @@ export default function Product({ _id, name, description, price, picture }) {
       localStorage.setItem("selectedProducts", JSON.stringify(updatedProducts));
       return updatedProducts;
     });
+    toast.success("Product added to cart!");
   }
 
   return (
@@ -36,7 +38,7 @@ export default function Product({ _id, name, description, price, picture }) {
         <div className="font-bold text-2xl grow">${price}</div>
         <button
           onClick={addProduct}
-          className="bg-emerald-400 text-white py-1 px-4 rounded-xl"
+          className="bg-emerald-400 text-white py-1 px-4 rounded-xl cursor-pointer hover:bg-emerald-500 transition-colors"
         >
           +
         </button>
