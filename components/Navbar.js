@@ -14,9 +14,12 @@ const Navbar = () => {
   const user = session.data?.user;
   let userName = user?.name || useSession?.email;
 
-  if (userName && userName.includes(" ")) {
-    userName = userName.split(" ")[0];
+  if (!user?.name && user?.email) {
+    userName = user?.email.split("@")[0];
+  } else {
+    userName = user?.name.split(" ")[0];
   }
+
   const pathname = usePathname();
   const { selectedProduct } = useContext(ProductContext);
 

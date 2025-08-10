@@ -62,6 +62,7 @@ export async function POST(req) {
       mode: "payment",
       success_url: `${process.env.NEXT_PUBLIC_URL}/success?orderId=${newOrder._id}`,
       cancel_url: `${NEXT_PUBLIC_URL}/cancel`,
+      metadata: { newOrderId: newOrder._id.toString() },
     });
 
     return new Response(JSON.stringify({ id: session.id, url: session.url }), {

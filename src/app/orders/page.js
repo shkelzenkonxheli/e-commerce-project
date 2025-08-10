@@ -8,6 +8,7 @@ export default function OrdersPage() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [profileFetched, setProfileFetched] = useState(false);
   const [orders, setOrders] = useState([]);
+  const [ordersLoading, setOrdersLoading] = useState(true);
 
   useEffect(() => {
     if (status === "authenticated" && session?.user) {
@@ -22,10 +23,17 @@ export default function OrdersPage() {
 
   useEffect(() => {
     if (status === "authenticated" && profileFetched) {
+      setOrdersLoading(true);
       fetch("/api/orders")
         .then((res) => res.json())
-        .then((data) => setOrders(data))
-        .catch((err) => console.error("Error fetching orders:", err));
+        .then((data) => {
+          setOrders(data);
+          setOrdersLoading(false);
+        })
+        .catch((err) => {
+          console.error("Error fetching orders:", err);
+          setOrdersLoading(false);
+        });
     }
   }, [session, status, profileFetched]);
 
@@ -56,8 +64,9 @@ export default function OrdersPage() {
     <div className="max-w-4xl mx-auto p-4">
       <UserTabs isAdmin={isAdmin} />
       <h1 className="mt-8 text-2xl font-bold mb-4 text-center">Orders</h1>
-
-      {orders.length === 0 ? (
+      {ordersLoading ? (
+        <p className="text-center">Loading orders...</p>
+      ) : orders.length === 0 ? (
         <p className="text-center text-gray-500">No orders found.</p>
       ) : (
         <div className="overflow-x-auto">
