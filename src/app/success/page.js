@@ -1,8 +1,17 @@
 "use client";
 import { useRouter } from "next/navigation";
+import { useContext } from "react";
+import { ProductContext } from "../../../components/ProductContext";
+import { useEffect } from "react";
 
 export default function SuccessPage() {
   const router = useRouter();
+  const { setSelectedProduct } = useContext(ProductContext);
+
+  useEffect(() => {
+    setSelectedProduct([]);
+    localStorage.removeItem("selectedProducts");
+  }, [setSelectedProduct]);
 
   const goHome = () => {
     router.push("/");
