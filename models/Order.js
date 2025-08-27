@@ -2,7 +2,18 @@ import { models, Schema, model } from "mongoose";
 
 const OrderSchema = new Schema(
   {
-    products: [{ name: String, price: Number, quantity: Number }],
+    products: [
+      {
+        productId: {
+          type: Schema.Types.ObjectId,
+          ref: "Product",
+          required: true,
+        },
+        name: String,
+        price: Number,
+        quantity: Number,
+      },
+    ],
     total: { type: Number, required: true },
     address: { type: String, required: true },
     city: { type: String, required: true },
@@ -13,6 +24,4 @@ const OrderSchema = new Schema(
   { timestamps: true }
 );
 
-const Order = models?.Order || model("Order", OrderSchema);
-
-export default Order;
+export default models?.Order || model("Order", OrderSchema);

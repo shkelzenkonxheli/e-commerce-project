@@ -1,6 +1,7 @@
 import Stripe from "stripe";
 import Order from "../../../../models/Order";
 import mongoose from "mongoose";
+import Product from "../../../../models/Product";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -24,8 +25,18 @@ export async function POST(req) {
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object;
+    const products = JSON.parse(session.metadata.products);
+    const orderId = session.metadata.newOrderId;
 
-    await Order.findByIdAndUpdate(session.metadata.newOrderId, { paid: true });
+    await Promise.all(
+      products.map((item) =>
+        Product.findByIdAndUpdate(item.productId, {
+          $inc: { stock: -item.quantity },
+        })
+      )
+    );
+
+    await Order.findByIdAndUpdate(orderId, { paid: true });
 
     console.log("✅ Payment succeeded for session:", session.id);
   }

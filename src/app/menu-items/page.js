@@ -9,6 +9,8 @@ export default function MenuItemsPage() {
   const [items, setItems] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editProduct, setEditProduct] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
 
   useEffect(() => {
     fetch("/api/products")
@@ -63,6 +65,14 @@ export default function MenuItemsPage() {
   if (!checkedAdmin) return <p className="text-center mt-8">Loading...</p>;
   if (!isAdmin) return <p className="text-center mt-8">Not an admin</p>;
 
+  const filteredItems = items
+    .filter((item) => {
+      return item.name.toLowerCase().includes(searchTerm.toLowerCase());
+    })
+    .filter((item) => {
+      return categoryFilter ? item.category === categoryFilter : true;
+    });
+
   return (
     <section className="mt-8 max-w-6xl mx-auto px-4">
       <UserTabs isAdmin={true} />
@@ -82,12 +92,34 @@ export default function MenuItemsPage() {
           onSave={editProduct ? handleUpdate : handleNewProduct}
         />
       )}
-      <h1 className="text-xl font-semibold mb-4">Menu Items</h1>
+      <div className="flex justify-center items-center mb-4">
+        <input
+          type="text"
+          placeholder="Search products..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="text-center border p-2 rounded-lg mb-4 mt-4"
+        />
+        <select
+          value={categoryFilter}
+          onChange={(e) => setCategoryFilter(e.target.value)}
+          className="ml-4 border p-2 rounded-lg mb-4 mt-4"
+        >
+          <option value="">All Categories</option>
+          {Array.from(new Set(items.map((item) => item.category))).map(
+            (category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            )
+          )}
+        </select>
+      </div>
       {items.length === 0 ? (
         <p className="text-gray-500">No products found.</p>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
-          {items.map((item) => (
+          {filteredItems.map((item) => (
             <div
               key={item._id}
               className="bg-white shadow rounded-lg p-3 text-sm"
@@ -114,6 +146,9 @@ export default function MenuItemsPage() {
                 </div>
               </div>
               <div className="mt-2 flex justify-between items-center">
+                <span className="text-xs text-gray-500">
+                  {item.stock} in stock
+                </span>
                 <button onClick={() => handleEditProduct(item)}>
                   <img
                     src="/edit.png"

@@ -5,6 +5,7 @@ export default function ProductForm({ product, onSave }) {
   const [price, setPrice] = useState("");
   const [category, setCategory] = useState("");
   const [picture, setPicture] = useState("");
+  const [stock, setStock] = useState("");
 
   async function handleSubmit(ev) {
     ev.preventDefault();
@@ -17,6 +18,7 @@ export default function ProductForm({ product, onSave }) {
         price,
         category,
         picture,
+        stock,
       }),
       headers: { "Content-type": "application/json" },
     });
@@ -29,6 +31,7 @@ export default function ProductForm({ product, onSave }) {
       setPrice("");
       setCategory("");
       setPicture("");
+      setStock("");
     }
   }
   useEffect(() => {
@@ -38,6 +41,7 @@ export default function ProductForm({ product, onSave }) {
       setPrice(product.price || "");
       setCategory(product.category || "");
       setPicture(product.picture || "");
+      setStock(product.stock || "");
     }
   }, [product]);
 
@@ -86,6 +90,13 @@ export default function ProductForm({ product, onSave }) {
         value={picture}
         onChange={(e) => setPicture(e.target.value)}
         placeholder="Image URL"
+        className="input-style"
+      />
+      <input
+        value={stock}
+        onChange={(e) => setStock(e.target.value)}
+        placeholder="Stock"
+        type="number"
         className="input-style"
       />
       <button type="submit" className="btn-primary">

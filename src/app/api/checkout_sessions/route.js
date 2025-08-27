@@ -24,7 +24,12 @@ export async function POST(req) {
       throw new Error("Total price is invalid");
     }
     const newOrder = await Order.create({
-      products,
+      products: products.map((p) => ({
+        productId: p.productId,
+        name: p.name,
+        price: p.price,
+        quantity: p.quantity,
+      })),
       total,
       address,
       city,
@@ -32,7 +37,6 @@ export async function POST(req) {
       email,
       paid: false,
     });
-
     console.log("Order Saved: " + newOrder);
 
     const NEXT_PUBLIC_URL =
@@ -62,9 +66,17 @@ export async function POST(req) {
       mode: "payment",
       success_url: `${process.env.NEXT_PUBLIC_URL}/success?orderId=${newOrder._id}`,
       cancel_url: `${NEXT_PUBLIC_URL}/cancel`,
-      metadata: { newOrderId: newOrder._id.toString() },
+      metadata: {
+        newOrderId: newOrder._id.toString(),
+        products: JSON.stringify(
+          products.map((p) => ({
+            productId: p.productId,
+            quantity: p.quantity,
+          }))
+        ),
+      },
     });
-
+    console.log("Checkout Session Metadata:", session.metadata);
     return new Response(JSON.stringify({ id: session.id, url: session.url }), {
       status: 200,
     });

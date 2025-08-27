@@ -3,7 +3,14 @@ import { ProductContext } from "./ProductContext";
 import { useEffect } from "react";
 import { toast } from "react-hot-toast";
 
-export default function Product({ _id, name, description, price, picture }) {
+export default function Product({
+  _id,
+  name,
+  description,
+  price,
+  picture,
+  stock,
+}) {
   const { selectedProduct, setSelectedProduct } = useContext(ProductContext);
 
   useEffect(() => {

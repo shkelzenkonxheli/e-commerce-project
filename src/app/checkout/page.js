@@ -46,11 +46,20 @@ export default function CheckoutPage() {
   }, [selectedProduct]);
 
   function moreOfThisProduct(_id) {
-    setSelectedProduct((prev) => {
-      const updatedProducts = [...prev, _id];
-      localStorage.setItem("selectedProducts", JSON.stringify(updatedProducts));
-      return updatedProducts;
-    });
+    const product = productsInfo.find((p) => p._id === _id);
+    const currentQuantity = selectedProduct.filter((id) => id === _id).length;
+    if (product && currentQuantity < product.stock) {
+      setSelectedProduct((prev) => {
+        const updatedProducts = [...prev, _id];
+        localStorage.setItem(
+          "selectedProducts",
+          JSON.stringify(updatedProducts)
+        );
+        return updatedProducts;
+      });
+    } else {
+      alert("No more stock available");
+    }
   }
 
   function lessOfThisProduct(_id) {
@@ -96,7 +105,12 @@ export default function CheckoutPage() {
           .map((id) => {
             const product = productsInfo.find((p) => p._id === id);
             return product
-              ? { name: product.name, price: product.price, quantity: 1 }
+              ? {
+                  productId: product._id,
+                  name: product.name,
+                  price: product.price,
+                  quantity: 1,
+                }
               : null;
           })
           .filter((p) => p !== null),
