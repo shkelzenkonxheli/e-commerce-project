@@ -2,6 +2,9 @@ import Stripe from "stripe";
 import { NextResponse } from "next/server";
 import mongoose from "mongoose";
 import Order from "../../../../models/Order";
+import { User } from "../../../../models/User";
+import { authOptions } from "../../../../lib/authOptions";
+import { getServerSession } from "next-auth";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const MONGO_URL = process.env.MONGO_URL;
@@ -14,6 +17,22 @@ if (!mongoose.connection.readyState) {
 }
 
 export async function POST(req) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) {
+    return new Response(
+      JSON.stringify({ error: "You must be logged in to place an order" }),
+      {
+        status: 401,
+      }
+    );
+  }
+  const user = await User.findOne({ email: session.user.email }).exec();
+  if (!user) {
+    return new Response(JSON.stringify({ error: "User not found" }), {
+      status: 404,
+    });
+  }
+
   try {
     const body = await req.json();
     console.log("📦 Received body:", body);
@@ -30,6 +49,7 @@ export async function POST(req) {
         price: p.price,
         quantity: p.quantity,
       })),
+      user: user._id,
       total,
       address,
       city,

@@ -1,7 +1,13 @@
 import { models, Schema, model } from "mongoose";
+import { type } from "os";
 
 const OrderSchema = new Schema(
   {
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
     products: [
       {
         productId: {

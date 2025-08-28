@@ -1,10 +1,25 @@
 import { NextResponse } from "next/server";
 import { initMongoose } from "../../../../lib/mongoose";
 import Order from "../../../../models/Order";
+import { User } from "../../../../models/User";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../auth/[...nextauth]/route";
 export async function GET(req) {
   await initMongoose();
+  const session = await getServerSession(authOptions);
+
+  if (!session)
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+
   try {
-    const orders = await Order.find().exec();
+    const user = await User.findOne({ email: session.user.email }).exec();
+    if (!user)
+      return NextResponse.json({ message: "User not found" }, { status: 404 });
+
+    const orders = user.admin
+      ? await Order.find().sort({ createdAt: -1 }).exec() // admin: të gjitha
+      : await Order.find({ user: user._id }).sort({ createdAt: -1 }).exec(); // user: vetëm vetja
+
     return NextResponse.json(orders, { status: 200 });
   } catch (error) {
     console.error("Error in /api/orders:", error);
