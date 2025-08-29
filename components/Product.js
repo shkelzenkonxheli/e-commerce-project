@@ -20,6 +20,14 @@ export default function Product({
   }, []);
 
   function addProduct() {
+    if (selectedProduct.includes(_id)) {
+      toast.error("Product already in cart");
+      return;
+    }
+    if (selectedProduct.length >= stock) {
+      toast.error("No more stock available");
+      return;
+    }
     setSelectedProduct((prev) => {
       const updatedProducts = [...prev, _id];
       localStorage.setItem("selectedProducts", JSON.stringify(updatedProducts));

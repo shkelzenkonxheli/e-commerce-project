@@ -18,6 +18,7 @@ const OrderSchema = new Schema(
         name: String,
         price: Number,
         quantity: Number,
+        picture: String,
       },
     ],
     total: { type: Number, required: true },

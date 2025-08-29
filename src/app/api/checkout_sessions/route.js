@@ -48,6 +48,7 @@ export async function POST(req) {
         name: p.name,
         price: p.price,
         quantity: p.quantity,
+        picture: p.picture,
       })),
       user: user._id,
       total,

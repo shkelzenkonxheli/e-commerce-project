@@ -110,6 +110,7 @@ export default function CheckoutPage() {
                   name: product.name,
                   price: product.price,
                   quantity: 1,
+                  picture: product.picture,
                 }
               : null;
           })
