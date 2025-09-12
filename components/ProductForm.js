@@ -13,7 +13,7 @@ export default function ProductForm({ product, onSave }) {
     if (!file) return;
 
     const formData = new FormData();
-    formData.append("file", file); // Name="file" është i rëndësishëm
+    formData.append("file", file);
 
     try {
       const res = await fetch("/api/upload", {
@@ -24,7 +24,7 @@ export default function ProductForm({ product, onSave }) {
       if (res.ok) {
         const data = await res.json();
         setPicture(data.url);
-        console.log("Upload successful:", data.url); // përdor data.url jo picture
+        console.log("Upload successful:", data.url);
       } else {
         console.error("Upload failed");
       }
