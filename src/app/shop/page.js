@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 export default function ShopPage() {
   const [productsInfo, setProductsInfo] = useState([]);
   const [phrase, setPhrase] = useState("");
+  const [sortBy, setSortBy] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -26,6 +27,11 @@ export default function ShopPage() {
   } else {
     products = productsInfo;
   }
+  if (sortBy === "priceLowToHigh") {
+    products.sort((a, b) => a.price - b.price);
+  } else if (sortBy === "priceHighToLow") {
+    products.sort((a, b) => b.price - a.price);
+  }
 
   return (
     <Layout>
@@ -38,6 +44,15 @@ export default function ShopPage() {
           value={phrase}
           onChange={(e) => setPhrase(e.target.value)}
         />
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value)}
+          className="bg-gray-100 px-4 py-2 rounded-xl border border-gray-300 ml-4"
+        >
+          <option value="">Sort By</option>
+          <option value="priceLowToHigh">Price: Low to High</option>
+          <option value="priceHighToLow">Price: High to Low</option>
+        </select>
       </div>
 
       {/* Product Categories and Display */}

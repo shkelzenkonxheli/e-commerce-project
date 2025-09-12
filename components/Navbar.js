@@ -24,7 +24,7 @@ const Navbar = () => {
   const { selectedProduct } = useContext(ProductContext);
 
   return (
-    <header className="bg-white shadow-md px-4 sm:px-6 py-4">
+    <header className="bg-white shadow-xs px-4 sm:px-6 py-4">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Logo */}
         <Link className="text-emerald-400 font-bold text-2xl" href="/">

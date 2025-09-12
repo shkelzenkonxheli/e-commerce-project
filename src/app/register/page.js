@@ -1,6 +1,8 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
+import { MdOutlineMail } from "react-icons/md";
+import { RiLockPasswordLine } from "react-icons/ri";
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
@@ -36,16 +38,14 @@ export default function RegisterPage() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="max-w-md w-full mx-auto mt-16 bg-white shadow-lg rounded-2xl p-10 space-y-6 border border-gray-200"
+      className="max-w-md w-full mx-auto mt-16 bg-white rounded-2xl p-10 space-y-6"
     >
       <h2 className="text-3xl font-bold text-center text-gray-800">
         Create Account
       </h2>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Email address
-        </label>
+      <div className="flex">
+        <MdOutlineMail className="mr-3 mt-2 w-10 h-10 text-gray-400" />
         <input
           placeholder="Email address"
           type="email"
@@ -57,10 +57,8 @@ export default function RegisterPage() {
         />
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Password
-        </label>
+      <div className="flex">
+        <RiLockPasswordLine className="mr-3 mt-2 w-10 h-10 text-gray-400" />
         <input
           placeholder="Password"
           type="password"
@@ -75,11 +73,11 @@ export default function RegisterPage() {
       <button
         type="submit"
         disabled={creatingUser}
-        className="w-full bg-emerald-400 hover:bg-emerald-500 text-white py-2 rounded-full font-semibold transition duration-200 disabled:bg-emerald-300 disabled:cursor-not-allowed disabled:opacity-70"
+        className="w-full cursor-pointer bg-emerald-400 hover:bg-emerald-500 text-white py-2 rounded-full font-semibold transition duration-200 disabled:bg-emerald-300 disabled:cursor-not-allowed disabled:opacity-70"
       >
         {creatingUser ? "Creating..." : "Register"}
       </button>
-      <button className="w-full flex items-center justify-center gap-3 bg-white border border-gray-300 py-2 rounded-full font-semibold text-gray-700 hover:bg-gray-100 transition">
+      <button className="w-full cursor-pointer flex items-center justify-center gap-3 bg-white border border-gray-300 py-2 rounded-full font-semibold text-gray-700 hover:bg-gray-100 transition">
         <Image src="/google.png" width={24} height={24} alt="Google" />
         Login with Google
       </button>
@@ -93,7 +91,7 @@ export default function RegisterPage() {
         Already have an account?{" "}
         <a
           href="/login"
-          className="text-emerald-600 hover:underline font-medium"
+          className="text-emerald-600 hover:underline font-medium cursor-pointer"
         >
           Log in
         </a>
