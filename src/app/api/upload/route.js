@@ -9,10 +9,18 @@ const s3 = new S3Client({
   },
 });
 
+/*************  ✨ Windsurf Command ⭐  *************/
+/**
+ * Upload a file to AWS S3
+ * @param {Object} req - The request object
+ * @returns {Object} The response object
+ * @throws {Error} If the file upload fails
+ */
+/*******  aab518c2-fee6-48b0-9a00-c8ed49547d49  *******/
 export async function POST(req) {
   try {
     const formData = await req.formData();
-    const file = formData.get("file"); // duhet të ketë name="file"
+    const file = formData.get("file");
 
     if (!file) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
@@ -27,7 +35,7 @@ export async function POST(req) {
       Key: fileName,
       Body: buffer,
       ContentType: file.type,
-      ACL: "public-read", // për t'i bërë publik
+      ACL: "public-read",
     });
 
     await s3.send(command);
