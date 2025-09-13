@@ -13,16 +13,34 @@ export default function MenuItemsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
 
+  // Fetch products
   useEffect(() => {
     fetch("/api/products")
       .then((res) => res.json())
+      .then((data) => setItems(data))
+      .catch((err) => console.error("Error fetching products:", err));
+  }, []);
+
+  // Fetch profile
+  useEffect(() => {
+    fetch("/api/profile")
+      .then((res) => res.json())
       .then((data) => {
-        setItems(data);
-      })
-      .catch((err) => {
-        console.error("Error fetching products:", err);
+        setIsAdmin(data.admin);
+        setCheckedAdmin(true);
       });
   }, []);
+
+  if (!checkedAdmin) return <p className="text-center mt-8">Loading...</p>;
+  if (!isAdmin) return <p className="text-center mt-8">Not an admin</p>;
+
+  const filteredItems = items
+    .filter((item) =>
+      item.name.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .filter((item) =>
+      categoryFilter ? item.category === categoryFilter : true
+    );
 
   function handleNewProduct(newProduct) {
     setItems((prevItems) => [...prevItems, newProduct]);
@@ -41,62 +59,42 @@ export default function MenuItemsPage() {
     );
     setEditProduct(null);
     setShowForm(false);
+    toast.success("Product updated!");
   }
 
   async function handleDeleteProduct(id) {
     if (confirm("Are you sure you want to delete this product?")) {
-      const res = await fetch("api/products", {
-        method: "Delete",
-        headers: {
-          "Content-Type": "application/json",
-        },
+      const res = await fetch("/api/products", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id }),
       });
       if (res.ok) {
         setItems((prev) => prev.filter((item) => item._id !== id));
+        toast.success("Product deleted!");
       } else {
-        console.error("Failed to delete product");
+        toast.error("Failed to delete product");
       }
     }
   }
 
-  useEffect(() => {
-    fetch("api/profile").then((res) => {
-      res.json().then((data) => {
-        setIsAdmin(data.admin);
-        setCheckedAdmin(true);
-      });
-    });
-  }, []);
-
-  if (!checkedAdmin) return <p className="text-center mt-8">Loading...</p>;
-  if (!isAdmin) return <p className="text-center mt-8">Not an admin</p>;
-
-  const filteredItems = items
-    .filter((item) => {
-      return item.name.toLowerCase().includes(searchTerm.toLowerCase());
-    })
-    .filter((item) => {
-      return categoryFilter ? item.category === categoryFilter : true;
-    });
-
   return (
-    <section className="mt-8 max-w-7xl mx-auto px-4 sm:px-6">
+    <section className="mt-8 w-full mx-auto px-4 sm:px-6 bg-gray-50 min-h-screen">
       <UserTabs isAdmin={true} />
 
       {/* Toolbar */}
-      <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <button
           onClick={() => {
             setEditProduct(null);
             setShowForm((prev) => !prev);
           }}
-          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 mb-0 px-4 py-2 rounded-xl bg-emerald-600 text-white font-medium shadow-sm hover:bg-emerald-700"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 text-white font-medium shadow-sm hover:bg-emerald-700 transition-colors"
         >
-          {showForm ? "Back" : "Add New Item"}
+          {showForm ? "Back" : "Add New Product"}
         </button>
 
-        <div className="w-full sm:w-auto flex flex-col sm:flex-row gap-3">
+        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
           <input
             type="text"
             placeholder="Search products..."
@@ -107,7 +105,7 @@ export default function MenuItemsPage() {
           <select
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
-            className="w-full sm:w-56 border rounded-xl px-3 py-2 shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="w-full sm:w-56 border rounded-xl px-3 py-2 shadow-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-emerald-500"
           >
             <option value="">All Categories</option>
             {Array.from(new Set(items.map((item) => item.category))).map(
@@ -121,13 +119,23 @@ export default function MenuItemsPage() {
         </div>
       </div>
 
-      {/* Form */}
+      {/* Modal Form */}
       {showForm && (
-        <div className="mt-4 rounded-2xl border border-gray-100 bg-white p-4 sm:p-6 shadow-sm">
-          <ProductForm
-            product={editProduct}
-            onSave={editProduct ? handleUpdate : handleNewProduct}
-          />
+        <div className="fixed inset-0 bg-black/30 flex justify-center items-start pt-20 z-50 overflow-auto">
+          <div className="bg-gray-50 p-6 rounded-2xl shadow-lg w-full max-w-lg mx-4 my-6 relative">
+            <button
+              onClick={() => setShowForm(false)}
+              className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+            >
+              ✕
+            </button>
+            <div className="max-h-[80vh] overflow-y-auto">
+              <ProductForm
+                product={editProduct}
+                onSave={editProduct ? handleUpdate : handleNewProduct}
+              />
+            </div>
+          </div>
         </div>
       )}
 
@@ -162,13 +170,19 @@ export default function MenuItemsPage() {
                   <span className="font-semibold text-emerald-600 text-sm">
                     ${item.price}
                   </span>
-                  <span className="text-xs text-gray-500 truncate max-w-[80px] text-right">
+                  <span className="text-xs text-gray-500 px-2 py-0.5 rounded-full bg-gray-100">
                     {item.category}
                   </span>
                 </div>
               </div>
               <div className="mt-2 flex items-center justify-between">
-                <span className="text-xs text-gray-500">
+                <span
+                  className={`text-xs px-2 py-0.5 rounded-full ${
+                    item.stock < 5
+                      ? "bg-red-100 text-red-700"
+                      : "bg-green-100 text-green-700"
+                  }`}
+                >
                   {item.stock} in stock
                 </span>
                 <div className="flex items-center gap-2">

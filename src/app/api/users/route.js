@@ -58,3 +58,18 @@ export async function DELETE(req) {
     );
   }
 }
+export async function POST(req) {
+  try {
+    await initMongoose();
+    const body = await req.json();
+    const { name, email, password, isAdmin } = body;
+    const createdUser = await User.create({ name, email, password, isAdmin });
+    return NextResponse.json(createdUser);
+  } catch (error) {
+    console.error("Error in POST /api/users:", error);
+    return NextResponse.json(
+      { message: "Internal Server Error", error: error.message },
+      { status: 500 }
+    );
+  }
+}

@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import UserTabs from "../../../components/UserTabs";
+import UserForm from "../../../components/UserForm";
 
 export default function UsersPage() {
   const [users, setUsers] = useState([]);
@@ -9,6 +10,7 @@ export default function UsersPage() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
+  const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
     fetch("/api/profile")
@@ -91,15 +93,41 @@ export default function UsersPage() {
     });
 
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center py-10 px-4">
+    <div className="min-h-screen bg-[#f9fafb] flex flex-col items-center py-10 px-4">
       <div className="mb-6 w-full max-w-5xl">
         <UserTabs isAdmin={isAdmin} />
       </div>
       <section className="w-full max-w-5xl bg-white rounded-2xl shadow-lg overflow-hidden">
-        <header className="flex items-center justify-between px-6 py-4 border-b bg-gray-50">
+        <header className="flex items-center justify-between px-6 py-4 bg-gray-50">
           <h1 className="text-xl font-semibold tracking-tight text-gray-800">
             Users
           </h1>
+          <button
+            onClick={() => setShowForm(true)}
+            className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-medium shadow transition-colors"
+          >
+            Add User
+          </button>
+          {showForm && (
+            <div className="fixed inset-0 bg-black/30 flex justify-center items-start pt-20 z-50 overflow-auto">
+              <div className="bg-gray-50 p-6 rounded-2xl shadow-lg w-full max-w-lg mx-4 my-6 relative">
+                <button
+                  onClick={() => setShowForm(false)}
+                  className="absolute top-3 right-3 text-gray-500 hover:text-gray-700 cursor-pointer"
+                >
+                  ✕
+                </button>
+                <div className="max-h-[80vh] overflow-y-auto">
+                  <UserForm
+                    onSave={(newUser) => {
+                      setUsers((prev) => [...prev, newUser]);
+                      setShowForm(false);
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
         </header>
         <div className="p-6 flex flex-col sm:flex-row gap-4 sm:gap-0 sm:justify-between mb-4">
           <input

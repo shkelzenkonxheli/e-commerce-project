@@ -24,35 +24,9 @@ const Navbar = () => {
   const { selectedProduct } = useContext(ProductContext);
 
   return (
-    <header className="bg-white shadow-xs px-4 sm:px-6 py-4">
+    <header className="bg-[#f9fafb] shadow-xs px-4 sm:px-6 py-4">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-        {/* Logo */}
-        <Link className="text-emerald-400 font-bold text-2xl" href="/">
-          My Store
-        </Link>
-
-        {/* Hamburger Icon for Mobile */}
-        <button
-          onClick={() => setMenuOpen(!menuOpen)}
-          className="md:hidden text-gray-600 focus:outline-none"
-        >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4 6h16M4 12h16M4 18h16"
-            />
-          </svg>
-        </button>
-
-        {/* Navigation for Desktop */}
+        {/* Left side - Navigation links */}
         <nav className="hidden md:flex items-center gap-6 text-gray-700 text-sm font-medium">
           <Link href="/" className="hover:underline">
             Home
@@ -66,7 +40,15 @@ const Navbar = () => {
           <Link href="/shop" className="hover:underline">
             Shop
           </Link>
+        </nav>
 
+        {/* Center - Logo */}
+        <Link className="text-emerald-400 font-bold text-2xl mx-6" href="/">
+          My Store
+        </Link>
+
+        {/* Right side - User actions / cart */}
+        <div className="flex items-center gap-4">
           {pathname === "/shop" && (
             <Link href="/checkout" className="relative">
               <svg
@@ -116,10 +98,31 @@ const Navbar = () => {
               </Link>
             </>
           )}
-        </nav>
+        </div>
+
+        {/* Hamburger for mobile */}
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          className="md:hidden text-gray-600 focus:outline-none"
+        >
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M4 6h16M4 12h16M4 18h16"
+            />
+          </svg>
+        </button>
       </div>
 
-      {/* Dropdown Menu for Mobile */}
+      {/* Mobile menu (dropdown) */}
       {menuOpen && (
         <div className="md:hidden mt-4 flex flex-col gap-3 text-gray-700 text-sm font-medium px-4">
           <Link href="/" className="hover:underline">
@@ -134,20 +137,6 @@ const Navbar = () => {
           <Link href="/shop" className="hover:underline">
             Shop
           </Link>
-
-          {pathname === "/shop" && (
-            <Link href="/checkout" className="relative">
-              <div className="flex items-center gap-2">
-                <span>Cart</span>
-                {selectedProduct.length > 0 && (
-                  <span className="bg-sky-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                    {selectedProduct.length}
-                  </span>
-                )}
-              </div>
-            </Link>
-          )}
-
           {status === "authenticated" ? (
             <>
               <Link href="/profile" className="hover:underline">

@@ -136,7 +136,7 @@ export default function ProductForm({ product, onSave }) {
         className="input-style"
       />
       <button type="submit" className="btn-primary">
-        Save Product
+        {product ? "Save" : "Create"}
       </button>
     </form>
   );
